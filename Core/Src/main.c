@@ -46,12 +46,11 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
-TIM_HandleTypeDef htim7;
+TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint64_t TIM7_ITs = 0; // counter of microseconds timesource ITs
 
 custom_printf_prt my_printf = NULL; // pointer to log output function
 
@@ -76,8 +75,8 @@ extern float gyr_z;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
-static void MX_TIM7_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 void UART2_printf( const char * format, ... );
@@ -118,10 +117,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_TIM7_Init();
   MX_USART2_UART_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim7); // enable microseconds timesource
+  HAL_TIM_Base_Start(&htim2); // enable microseconds timesource
 
   // assign desired log info output function
   my_printf = (custom_printf_prt)UART2_printf;
@@ -130,13 +129,14 @@ int main(void)
   //uint8_t form_feed_char = 12;
   //HAL_UART_Transmit(&huart2, &form_feed_char, 1, 100);
 
-  my_printf("peter FF \n\r");
+  my_printf("SystemCoreClock : %d \n\r", SystemCoreClock/1000000);
 #if 1
   while(1)
   {
 	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	  //my_printf("peter  \n\r");
-	  HAL_Delay(10);
+	  //HAL_Delay(10);
+	  micros_delay(1);
   }
 #else
   bosch_imu_setup();
@@ -257,40 +257,48 @@ static void MX_I2C1_Init(void)
 }
 
 /**
-  * @brief TIM7 Initialization Function
+  * @brief TIM2 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM7_Init(void)
+static void MX_TIM2_Init(void)
 {
 
-  /* USER CODE BEGIN TIM7_Init 0 */
+  /* USER CODE BEGIN TIM2_Init 0 */
+	uint32_t prescaler = (HAL_RCC_GetPCLK1Freq() / 1000000);
 
-  /* USER CODE END TIM7_Init 0 */
+  /* USER CODE END TIM2_Init 0 */
 
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-  /* USER CODE BEGIN TIM7_Init 1 */
+  /* USER CODE BEGIN TIM2_Init 1 */
 
-  /* USER CODE END TIM7_Init 1 */
-  htim7.Instance = TIM7;
-  htim7.Init.Prescaler = 160;
-  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim7.Init.Period = 65535;
-  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 84-1;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 0xFFFFFFFF;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM7_Init 2 */
+  /* USER CODE BEGIN TIM2_Init 2 */
 
-  /* USER CODE END TIM7_Init 2 */
+  /* USER CODE END TIM2_Init 2 */
 
 }
 
@@ -408,25 +416,21 @@ void bhy2_delay_us(uint32_t us, void *private_data)
   micros_delay( (uint64_t)us );
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if( htim->Instance == TIM7 )
-  {
-    TIM7_ITs++;
-  }
-}
-
 #pragma optimize s=none
 uint64_t micros(void)
 { 
-  return (uint64_t)(__HAL_TIM_GET_COUNTER(&htim7) + 50000u * TIM7_ITs);
+//  return (uint64_t)(__HAL_TIM_GET_COUNTER(&htim2));
+	__IO uint32_t usTicks = __HAL_TIM_GET_COUNTER(&htim2);
+	return usTicks;
 }
 
 #pragma optimize s=none
 void micros_delay( uint64_t delay )
 {
-  uint64_t timestamp = micros();
-  while( micros() < timestamp + delay );
+//  uint64_t timestamp = micros();
+//  while( micros() < timestamp + delay );
+	__IO uint32_t usTicks = __HAL_TIM_GET_COUNTER(&htim2);
+		while ((__HAL_TIM_GET_COUNTER(&htim2) - usTicks) < delay) {}
 }
 
 void UART2_printf( const char * format, ... )
