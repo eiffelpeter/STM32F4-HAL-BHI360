@@ -1,0 +1,66 @@
+BHIx60/BHAx60 found. Product ID read 89
+Loading firmware into RAM.
+Booting from RAM.
+Boot successful. Kernel version 5991.
+[META EVENT WAKE UP] Firmware initialized. Firmware version 5991
+[META EVENT] Firmware initialized. Firmware version 5991
+Product ID     : 89
+Kernel version : 5991
+User version   : 5991
+ROM version    : 5166
+Power state    : sleeping
+Host interface : I2C
+Feature status : 0x4a
+Boot Status : 0x38:
+        No flash installed.
+        Host interface ready.
+        Firmware verification done.
+Virtual sensor list.
+Sensor ID |                          Sensor Name |  ID | Ver |  Min rate |  Max rate |
+----------+--------------------------------------+-----+-----+-----------+-----------|
+        1 |            Accelerometer passthrough | 205 |   1 |    1.5625 |  400.0000 |
+        3 |           Accelerometer uncalibrated | 203 |   1 |    1.5625 |  400.0000 |
+        4 |              Accelerometer corrected | 241 |   1 |    1.5625 |  400.0000 |
+        5 |                 Accelerometer offset | 209 |   1 |    1.0000 |    1.0000 |
+        6 |      Accelerometer corrected wake up | 192 |   1 |    1.5625 |  400.0000 |
+        7 |   Accelerometer uncalibrated wake up | 204 |   1 |    1.5625 |  400.0000 |
+       10 |                Gyroscope passthrough | 207 |   1 |    1.5625 |  400.0000 |
+       12 |               Gyroscope uncalibrated | 244 |   1 |    1.5625 |  400.0000 |
+       13 |                  Gyroscope corrected | 243 |   1 |    1.5625 |  400.0000 |
+       14 |                     Gyroscope offset | 208 |   1 |    1.0000 |    1.0000 |
+       15 |                    Gyroscope wake up | 194 |   1 |    1.5625 |  400.0000 |
+       16 |       Gyroscope uncalibrated wake up | 195 |   1 |    1.5625 |  400.0000 |
+       28 |                       Gravity vector | 247 |   1 |    1.5625 |  400.0000 |
+       29 |               Gravity vector wake up | 198 |   1 |    1.5625 |  400.0000 |
+       31 |                  Linear acceleration | 246 |   1 |    1.5625 |  400.0000 |
+       32 |          Linear acceleration wake up | 197 |   1 |    1.5625 |  400.0000 |
+       37 |                 Game rotation vector | 252 |   1 |    1.5625 |  400.0000 |
+       38 |         Game rotation vector wake up | 200 |   1 |    1.5625 |  400.0000 |
+       43 |                          Orientation | 254 |   1 |    1.5625 |  400.0000 |
+       44 |                  Orientation wake up | 202 |   1 |    1.5625 |  400.0000 |
+      136 |               Low Power Step counter | 249 |   1 |    1.0000 |    1.0000 |
+      137 |              Low Power Step detector | 248 |   1 |    1.0000 |    1.0000 |
+      142 |                 Low Power Any motion | 176 |   1 |    1.0000 |    1.0000 |
+      153 |                   Multi Tap Detector | 182 |   1 |    1.0000 |    1.0000 |
+      154 |   Activity recognition for Wearables | 237 |   1 |    1.0000 |    1.0000 |
+      156 |      Low Power Wrist Gesture wake up | 228 |   1 |    1.0000 |    1.0000 |
+      158 |         Low Power Wrist Wear wake up | 178 |   1 |    1.0000 |    1.0000 |
+      159 |          Low Power No Motion wake up | 181 |   1 |    1.0000 |    1.0000 |
+Enable Orientation at 100.00Hz.
+Enable Accelerometer corrected at 100.00Hz.
+Enable Gyroscope corrected at 100.00Hz.
+[META EVENT] Power mode changed for sensor id 43
+[META EVENT] Sample rate changed for sensor id 43
+[META EVENT] Power mode changed for sensor id 4
+[META EVENT] Sample rate changed for sensor id 4
+[META EVENT] Power mode changed for sensor id 13
+[META EVENT] Sample rate changed for sensor id 13
+[META EVENT] Accuracy for sensor id 13 changed to 0
+[META EVENT] Accuracy for sensor id 4 changed to 0
+[META EVENT] Accuracy for sensor id 43 changed to 3
+Euler:  32.79 59.19 54.04
+Accelerometer:  0.42 -0.87 0.30
+Gyro:   -0.06 -0.12 0.00
+Euler:  32.79 59.19 54.04
+Accelerometer:  0.42 -0.86 0.30
+Gyro:   0.00 -0.06 0.00

@@ -1,13 +1,30 @@
 
-#  STM32 HAL BHI360
-An example of STM32Cube HAL project for communication with Bosch BHI360 IMU via I2C. 
-The goal of this repo is to show how to use [BHY2-Sensor-API](https://github.com/boschsensortec/BHY2-Sensor-API) with the STM32 family MCUs and Cube software. The code is stripped of the COINES abstraction layer and built around the STM32 HAL instead. 
-The project is configured for use with F407 board, but could be easily portable to any STM32 chip. 
+## Install STM32 tools 
+[STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
+[STM32CubeIDE](https://www.st.com/en/development-tools/stm32cubeide.html) 
+[STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)  
 
-This example shows how to configure and use three BHI360 virtual sensors: Accelerometer, Gyroscope and Euler angle sensor. For other usage examples please refer to BHY2 repository. The provided software also should work with other IMUs like BHI260, but it is untested. 
+## Clone code
+`git clone https://github.com/eiffelpeter/STM32F4-HAL-BHI360.git`
 
-## Building
-Open .ioc file in the [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) and generate source files for your preffered IDE. Then just add **`bhy2.c, bhy2_hif.c, bhy2_parse.c, common.c, bosch_imu.c `** into the sources and **`/bosch, /bosch/common`** into the search directories.
+##  Hardware
+STM32F4-discovery(STM32F4VGT6) board + Bosch BHI360
 
-## Acknowledgements
-Big thanks to [SensorLib](https://github.com/lewisxhe/SensorLib) for providing great examples of how to cook BHY2. 
+## Connect stm32f4-discovery and bhi360
+![IMAGE ALT TEXT HERE](./img/IMG_8921.jpg)
+
+## Pin connection for test
+![IMAGE ALT TEXT HERE](./img/bhi360_shttle_board.png)
+
+## console log 
+printf at STM32 PA2 ( baud rate 115200 )
+[log](./img/log.txt)  
+
+## Build and Download
+Open STM32F4-HAL-BHI360.ioc file in the STM32CubeMX and generate code. 
+Open STM32CubeIDE and import this folder by `Import Atollic TrueSTUDIO Project'
+Open STM32CubeProgrammer and select `STM32F4-HAL-BHI360.hex` to Download
+After Download, press reset button to run.
+
+## Reference
+[STM32-HAL-BHI360](https://github.com/Dmivaka/STM32-HAL-BHI360/tree/main) 
