@@ -37,6 +37,18 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 typedef void (*custom_printf_prt)( const char * format, ... );
+
+typedef struct
+{
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r12;
+    uint32_t lr;
+    uint32_t pc;
+    uint32_t psr;
+} ExceptionStackFrame;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

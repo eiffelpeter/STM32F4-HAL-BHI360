@@ -52,7 +52,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-custom_printf_prt my_printf = NULL; // pointer to log output function
+custom_printf_prt my_printf = NULL;	// pointer to log output function
 
 uint64_t last_result = 0;
 
@@ -69,6 +69,8 @@ extern float acc_z;
 extern float gyr_x;
 extern float gyr_y;
 extern float gyr_z;
+
+uint32_t prescaler;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,7 +97,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	uint32_t led_tick=0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -120,59 +122,48 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim2); // enable microseconds timesource
+	HAL_TIM_Base_Start(&htim2);	// enable microseconds timesource
 
-  // assign desired log info output function
-  my_printf = (custom_printf_prt)UART2_printf;
-  my_printf("peter 01 \n\r");
-  // clear the terminal screen
-  //uint8_t form_feed_char = 12;
-  //HAL_UART_Transmit(&huart2, &form_feed_char, 1, 100);
+	// assign desired log info output function
+	my_printf = (custom_printf_prt)UART2_printf;
 
-  my_printf("SystemCoreClock : %d \n\r", SystemCoreClock/1000000);
-#if 1
-  while(1)
-  {
-	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-	  //my_printf("peter  \n\r");
-	  //HAL_Delay(10);
-	  micros_delay(1);
-  }
-#else
-  bosch_imu_setup();
+	// clear the terminal screen
+	//uint8_t form_feed_char = 12;
+	//HAL_UART_Transmit(&huart2, &form_feed_char, 1, 100);
+
+	my_printf("SystemCoreClock : %d MHz\n\r", SystemCoreClock/1000000);
+	my_printf("tim2 prescaler : %d MHz\n\r", prescaler);
+
+	bosch_imu_setup();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    if( ( micros() - last_result ) > 2000 )
-    {
-      sensor_reports = 0; 
-    }
-    
-    // check if all three sensors did report
-    if( sensor_reports == 7u )
-    {
-      // indicate successfull three sensors reading
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-      micros_delay( 100 );
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-      
-      // send the data 
-      my_printf("Euler:\t%4.2f %4.2f %4.2f \r\n", Heading, Pitch, Roll);
-      my_printf("Accelerometer:\t%4.2f %4.2f %4.2f \r\n", acc_x, acc_y, acc_z);
-      my_printf("Gyro:\t%4.2f %4.2f %4.2f \r\n", gyr_x, gyr_y, gyr_z);
-      
-      sensor_reports = 0;
-    }
-      
-    bosch_imu_run();
+	while (1) {
+		if ( ( micros() - last_result ) > 2000 ) {
+			sensor_reports = 0; 
+		}
+
+		// check if all three sensors did report
+		if ( sensor_reports == 7u ) {
+			// indicate successfull three sensors reading
+			if (HAL_GetTick() - led_tick > 100) {
+				led_tick = HAL_GetTick();
+				HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+			}
+
+			// send the data 
+			my_printf("Euler:\t%4.2f %4.2f %4.2f \r\n", Heading, Pitch, Roll);
+			my_printf("Accelerometer:\t%4.2f %4.2f %4.2f \r\n", acc_x, acc_y, acc_z);
+			my_printf("Gyro:\t%4.2f %4.2f %4.2f \r\n", gyr_x, gyr_y, gyr_z);
+			sensor_reports = 0;
+		}
+
+		bosch_imu_run();
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
-#endif
   /* USER CODE END 3 */
 }
 
@@ -238,8 +229,8 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.ClockSpeed = 400000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -251,7 +242,7 @@ static void MX_I2C1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN I2C1_Init 2 */
-  //HAL_I2C_MspInit(&hi2c1);
+
   /* USER CODE END I2C1_Init 2 */
 
 }
@@ -265,7 +256,11 @@ static void MX_TIM2_Init(void)
 {
 
   /* USER CODE BEGIN TIM2_Init 0 */
-	uint32_t prescaler = (HAL_RCC_GetPCLK1Freq() / 1000000);
+	prescaler = (HAL_RCC_GetPCLK1Freq() / 1000000);
+
+	if ((RCC->CFGR & RCC_CFGR_PPRE1) != 0)
+		prescaler *= 2;
+
 
   /* USER CODE END TIM2_Init 0 */
 
@@ -330,7 +325,7 @@ static void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
-  //HAL_UART_MspInit(&huart2);
+
   /* USER CODE END USART2_Init 2 */
 
 }
@@ -369,54 +364,47 @@ static void MX_GPIO_Init(void)
 /*
 int8_t bhy2_spi_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
-    (void)intf_ptr;
+	(void)intf_ptr;
 
-    return coines_read_spi(COINES_SPI_BUS_0, cs_pin, reg_addr, reg_data, (uint16_t)length);
+	return coines_read_spi(COINES_SPI_BUS_0, cs_pin, reg_addr, reg_data, (uint16_t)length);
 }
 
 int8_t bhy2_spi_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
-    (void)intf_ptr;
+	(void)intf_ptr;
 
-    return coines_write_spi(COINES_SPI_BUS_0, cs_pin, reg_addr, (uint8_t *)reg_data, (uint16_t)length);
+	return coines_write_spi(COINES_SPI_BUS_0, cs_pin, reg_addr, (uint8_t *)reg_data, (uint16_t)length);
 }
 */
 
 int8_t bhy2_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
-  (void)intf_ptr;
+	(void)intf_ptr;
 
-  if( HAL_I2C_Mem_Read(&hi2c1, 0x28<<1, reg_addr, I2C_MEMADD_SIZE_8BIT, reg_data, (uint16_t)length, 100) == HAL_OK )
-  {
-    return 0;
-  }
-  else
-  {
-    return 1;
-  }
+	if ( HAL_I2C_Mem_Read(&hi2c1, 0x28<<1, reg_addr, I2C_MEMADD_SIZE_8BIT, reg_data, (uint16_t)length, 100) == HAL_OK ) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 int8_t bhy2_i2c_write(uint8_t reg_addr,const uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
-  (void)intf_ptr;
+	(void)intf_ptr;
 
-  if( HAL_I2C_Mem_Write(&hi2c1, 0x28<<1, reg_addr, I2C_MEMADD_SIZE_8BIT, (uint8_t *)reg_data, (uint16_t)length, 100) == HAL_OK )
-  {
-    return 0;
-  }
-  else
-  {
-    return 1;
-  }
+	if ( HAL_I2C_Mem_Write(&hi2c1, 0x28<<1, reg_addr, I2C_MEMADD_SIZE_8BIT, (uint8_t *)reg_data, (uint16_t)length, 100) == HAL_OK ) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 void bhy2_delay_us(uint32_t us, void *private_data)
 {
-  (void)private_data;
-  micros_delay( (uint64_t)us );
+	(void)private_data;
+	micros_delay( (uint64_t)us );
 }
 
-#pragma optimize s=none
 uint64_t micros(void)
 { 
 //  return (uint64_t)(__HAL_TIM_GET_COUNTER(&htim2));
@@ -424,24 +412,24 @@ uint64_t micros(void)
 	return usTicks;
 }
 
-#pragma optimize s=none
 void micros_delay( uint64_t delay )
 {
 //  uint64_t timestamp = micros();
 //  while( micros() < timestamp + delay );
 	__IO uint32_t usTicks = __HAL_TIM_GET_COUNTER(&htim2);
-		while ((__HAL_TIM_GET_COUNTER(&htim2) - usTicks) < delay) {}
+	while ((__HAL_TIM_GET_COUNTER(&htim2) - usTicks) < delay) {
+	}
 }
 
 void UART2_printf( const char * format, ... )
 {
-  char buffer[256] = {0};
-  va_list args;
-  va_start (args, format);
-  int len = vsprintf (buffer,format, args);
-  va_end (args);
-  
-  HAL_UART_Transmit(&huart2, (const uint8_t*)buffer, len, 100);
+	char buffer[256] = {0};
+	va_list args;
+	va_start (args, format);
+	int len = vsprintf (buffer,format, args);
+	va_end (args);
+
+	HAL_UART_Transmit(&huart2, (const uint8_t*)buffer, len, 100);
 }
 /* USER CODE END 4 */
 
@@ -452,12 +440,19 @@ void UART2_printf( const char * format, ... )
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  my_printf("I've fallen into Error Handler");
-  __disable_irq();
-  while (1)
-  {
-  }
+	/* User can add his own implementation to report the HAL error return state */
+	uint32_t current_psp = __get_PSP();
+	ExceptionStackFrame *hardfault_stack_frame = (ExceptionStackFrame *)(current_psp);
+	uint32_t pc_value_at_fault = hardfault_stack_frame->pc;
+
+	my_printf("lr:0x%x \n\r", hardfault_stack_frame->lr);
+	my_printf("pc:0x%x \n\r", pc_value_at_fault);
+
+	my_printf("I've fallen into Error Handler \n\r");
+
+	__disable_irq();
+	while (1) {
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -472,8 +467,8 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	/* User can add his own implementation to report the file name and line number,
+	   ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
