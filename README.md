@@ -8,10 +8,10 @@
 `git clone https://github.com/eiffelpeter/STM32F4-HAL-BHI360.git`  
 
 
-## Connect STM32F4-Discovery and BHI360
+## Connect STM32F4-Discovery and BHI360 via I2C
 ![IMAGE ALT TEXT HERE](./Doc/IMG_8921.jpg)  
 
-## Pin connection for BHI360 shuttle board
+## I2C interface connections for BHI360 shuttle board
 ![IMAGE ALT TEXT HERE](./Doc/bhi360_shttle_board.png)  
 
 ![IMAGE ALT TEXT HERE](./Doc/bhi360_shttle_board_2.jpg)  
@@ -23,8 +23,16 @@
 3. Open STM32CubeProgrammer and select `STM32F4-HAL-BHI360.hex` to Download.  
 4. After Download, press STM32F4 reset button to run.  
 5. LD4 LED blink when read sensors successfully.
-6. Console [log](./Doc/log.txt) print tx at STM32 PA2 ( baud rate 115200 )  
+6. Console [log](./Doc/log.txt) print tx at STM32 PA2 ( baud rate 115200 ).  
 ![IMAGE ALT TEXT HERE](./Doc/console.png)  
+
+
+## Check build log for flash and ram size
+```
+   text	   data	    bss	    dec	    hex	filename
+ 183076	    468	  28072	 211616	  33aa0	STM32F4-HAL-BHI360.elf
+```
+
 
 ## Reference
 [STM32-HAL-BHI360](https://github.com/Dmivaka/STM32-HAL-BHI360/tree/main). This [document](./Doc/howto_build_STM32G4.docx) show howto build STM32G4.  
