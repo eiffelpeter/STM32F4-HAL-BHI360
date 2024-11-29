@@ -34,5 +34,10 @@
 ```
 
 
+## Build error
+Please check STM32Cube path in .cproject and .project files.  
+![IMAGE ALT TEXT HERE](./Doc/stm32cube_path.png)  
+
+
 ## Reference
 [STM32-HAL-BHI360](https://github.com/Dmivaka/STM32-HAL-BHI360/tree/main). This [document](./Doc/howto_build_STM32G4.docx) show howto build STM32G4.  
