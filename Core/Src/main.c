@@ -97,7 +97,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	uint32_t led_tick=0;
+	uint32_t led_tick=0, print_tick=0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -152,10 +152,14 @@ int main(void)
 				HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 			}
 
-			// send the data 
-			my_printf("Euler:\t%4.2f %4.2f %4.2f \r\n", Heading, Pitch, Roll);
-			my_printf("Accelerometer:\t%4.2f %4.2f %4.2f \r\n", acc_x, acc_y, acc_z);
-			my_printf("Gyro:\t%4.2f %4.2f %4.2f \r\n", gyr_x, gyr_y, gyr_z);
+			if (HAL_GetTick() - print_tick > 1000) {
+				print_tick = HAL_GetTick();
+				// send the data
+				my_printf("Euler:\t%4.2f %4.2f %4.2f \r\n", Heading, Pitch, Roll);
+				my_printf("Accel:\t%4.2f %4.2f %4.2f \r\n", acc_x, acc_y, acc_z);
+				my_printf("Gyro:\t%4.2f %4.2f %4.2f \r\n", gyr_x, gyr_y, gyr_z);
+			}
+
 			sensor_reports = 0;
 		}
 
@@ -426,7 +430,7 @@ void UART2_printf( const char * format, ... )
 	char buffer[256] = {0};
 	va_list args;
 	va_start (args, format);
-	int len = vsprintf (buffer,format, args);
+	int len = vsnprintf (buffer, sizeof(buffer), format, args);
 	va_end (args);
 
 	HAL_UART_Transmit(&huart2, (const uint8_t*)buffer, len, 100);
