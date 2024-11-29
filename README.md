@@ -14,6 +14,8 @@
 ## Pin connection for BHI360 shuttle board
 ![IMAGE ALT TEXT HERE](./Doc/bhi360_shttle_board.png)  
 
+![IMAGE ALT TEXT HERE](./Doc/bhi360_shttle_board_2.jpg)  
+
 
 ## Build and Download
 1. Open `STM32F4-HAL-BHI360.ioc` file in the STM32CubeMX and generate code.  
