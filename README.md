@@ -12,9 +12,9 @@
 ![IMAGE ALT TEXT HERE](./Doc/IMG_8921.jpg)  
 
 ## I2C interface connections for BHI360 shuttle board
-![IMAGE ALT TEXT HERE](./Doc/bhi360_shttle_board.png)  
+![IMAGE ALT TEXT HERE](./Doc/bhi360_shuttle_board.png)  
 
-![IMAGE ALT TEXT HERE](./Doc/bhi360_shttle_board_2.jpg)  
+![IMAGE ALT TEXT HERE](./Doc/bhi360_shuttle_board_2.jpg)  
 
 
 ## Build and Download
