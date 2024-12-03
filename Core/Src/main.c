@@ -411,18 +411,14 @@ void bhy2_delay_us(uint32_t us, void *private_data)
 
 uint64_t micros(void)
 { 
-//  return (uint64_t)(__HAL_TIM_GET_COUNTER(&htim2));
 	__IO uint32_t usTicks = __HAL_TIM_GET_COUNTER(&htim2);
 	return usTicks;
 }
 
 void micros_delay( uint64_t delay )
 {
-//  uint64_t timestamp = micros();
-//  while( micros() < timestamp + delay );
-	__IO uint32_t usTicks = __HAL_TIM_GET_COUNTER(&htim2);
-	while ((__HAL_TIM_GET_COUNTER(&htim2) - usTicks) < delay) {
-	}
+	__IO uint32_t usTicks = __HAL_TIM_GET_COUNTER(&htim2) + delay;
+	while ( __HAL_TIM_GET_COUNTER(&htim2) < usTicks );
 }
 
 void UART2_printf( const char * format, ... )
