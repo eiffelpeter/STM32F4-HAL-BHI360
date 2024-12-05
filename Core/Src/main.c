@@ -76,9 +76,9 @@ uint32_t prescaler;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 void UART2_printf( const char * format, ... );
@@ -118,9 +118,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_I2C1_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start(&htim2);	// enable microseconds timesource
 
@@ -406,7 +406,7 @@ int8_t bhy2_i2c_write(uint8_t reg_addr,const uint8_t *reg_data, uint32_t length,
 void bhy2_delay_us(uint32_t us, void *private_data)
 {
 	(void)private_data;
-	micros_delay( (uint64_t)us );
+	micros_delay( us );
 }
 
 uint64_t micros(void)
@@ -415,7 +415,7 @@ uint64_t micros(void)
 	return usTicks;
 }
 
-void micros_delay( uint64_t delay )
+void micros_delay( uint32_t delay )
 {
 	__IO uint32_t usTicks = __HAL_TIM_GET_COUNTER(&htim2) + delay;
 	while ( __HAL_TIM_GET_COUNTER(&htim2) < usTicks );

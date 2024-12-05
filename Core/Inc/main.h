@@ -73,7 +73,7 @@ void bhy2_delay_us(uint32_t us, void *private_data);
 uint8_t get_interrupt_status(void);
 
 uint64_t micros(void);
-void micros_delay( uint64_t delay );
+void micros_delay( uint32_t delay );
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
